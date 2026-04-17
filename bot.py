@@ -8,7 +8,7 @@ import time
 IRC_SERVER = os.environ.get("IRC_SERVER", "irc.the14.xyz")
 IRC_PORT = int(os.environ.get("IRC_PORT", 6697))
 IRC_CHANNEL = os.environ.get("IRC_CHANNEL", "#itmimimi")
-IRC_NICK = os.environ.get("IRC_NICK", "ollama")
+IRC_NICK = os.environ.get("IRC_NICK", "zeh")
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://host.docker.internal:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "dolphin3:latest")
 
@@ -85,7 +85,7 @@ class IRCBot:
         ctx = ssl.create_default_context()
         self.sock = ctx.wrap_socket(raw, server_hostname=IRC_SERVER)
         self.send(f"NICK {IRC_NICK}")
-        self.send(f"USER {IRC_NICK} 0 * :Ollama IRC Bot")
+        self.send(f"USER {IRC_NICK} 0 * :Zeh IRC Bot")
 
     def send(self, text: str):
         self.sock.sendall((text + "\r\n").encode("utf-8"))
