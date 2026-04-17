@@ -84,6 +84,7 @@ class IRCBot:
         raw = socket.create_connection((IRC_SERVER, IRC_PORT), timeout=30)
         ctx = ssl.create_default_context()
         self.sock = ctx.wrap_socket(raw, server_hostname=IRC_SERVER)
+        self.sock.settimeout(None)  # block indefinitely on recv after handshake
         self.send(f"NICK {IRC_NICK}")
         self.send(f"USER {IRC_NICK} 0 * :Zeh IRC Bot")
 
@@ -131,10 +132,15 @@ class IRCBot:
             return
 
         if is_channel:
-            trigger = f"{IRC_NICK}:"
-            if not message.lower().startswith(trigger.lower()):
+            # accept any punctuation after nick: "zeh:", "zeh,", "zeh -", etc.
+            nick_lower = IRC_NICK.lower()
+            msg_lower = message.lower()
+            if not msg_lower.startswith(nick_lower):
                 return
-            message = message[len(trigger):].strip()
+            rest = message[len(IRC_NICK):]
+            if not rest or rest[0].isalnum():
+                return
+            message = rest.lstrip(" ,:.!-").strip()
 
         threading.Thread(
             target=self._respond,
