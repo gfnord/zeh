@@ -82,9 +82,13 @@ class IRCBot:
 
     def connect(self):
         raw = socket.create_connection((IRC_SERVER, IRC_PORT), timeout=30)
+        raw.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        raw.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 60)
+        raw.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
+        raw.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 3)
         ctx = ssl.create_default_context()
         self.sock = ctx.wrap_socket(raw, server_hostname=IRC_SERVER)
-        self.sock.settimeout(None)  # block indefinitely on recv after handshake
+        self.sock.settimeout(None)
         self.send(f"NICK {IRC_NICK}")
         self.send(f"USER {IRC_NICK} 0 * :Zeh IRC Bot")
 
